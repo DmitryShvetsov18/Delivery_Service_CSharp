@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "DeliveryService.Domain": {
+      "commandName": "Project"
+    },
+    "Профиль 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\dimas\\Desktop\\ТП\\Курсач\\App\\DeliveryService.Domain\\Services\\CapacityChecker.cs"
+    }
+  }
+}
