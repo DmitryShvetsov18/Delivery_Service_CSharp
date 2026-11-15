@@ -1,45 +1,38 @@
 using DeliveryService.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using DeliveryService.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
-namespace DeliveryService.Web
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();
 
-
-            var cs = Environment.GetEnvironmentVariable("DELIVERY_DB")
+var cs = Environment.GetEnvironmentVariable("DELIVERY_DB")
     ?? throw new InvalidOperationException("Не задана DELIVERY_DB");
-            var dataSource = DeliveryDbContext.CreateDataSource(cs);
-            builder.Services.AddSingleton(dataSource);
-            builder.Services.AddDbContext<DeliveryDbContext>(o =>
-                DeliveryDbContext.Configure(new DbContextOptionsBuilder<DeliveryDbContext>(), dataSource));
+var dataSource = DeliveryDbContext.CreateDataSource(cs);
+builder.Services.AddSingleton(dataSource);
+builder.Services.AddDbContext<DeliveryDbContext>(o => DeliveryDbContext.Configure(o, dataSource));
 
-            builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<AuthService>();
 
-            var app = builder.Build();
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(o =>
+    {
+        o.LoginPath = "/Account/Login";
+        o.AccessDeniedPath = "/Account/Denied";
+        o.ExpireTimeSpan = TimeSpan.FromHours(8);
+        o.SlidingExpiration = true;
+    });
+builder.Services.AddAuthorization();
 
+var app = builder.Build();
 
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
+using (var scope = app.Services.CreateScope())
+    await DbSeeder.SeedAsync(scope.ServiceProvider.GetRequiredService<DeliveryDbContext>());
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
-
-            app.Run();
-        }
-    }
-}
+app.UseStaticFiles();
+app.UseRouting();
+app.UseAuthentication();   // строго до UseAuthorization
+app.UseAuthorization();
+app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+app.Run();

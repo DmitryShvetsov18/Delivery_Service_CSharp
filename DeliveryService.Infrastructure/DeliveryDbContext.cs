@@ -29,29 +29,22 @@ public class DeliveryDbContext : DbContext
         b.MapEnum<EventChannel>("event_channel");
         return b.Build();
     }
-    public static DbContextOptions<DeliveryDbContext> CreateOptions(string connectionString) =>
-        new DbContextOptionsBuilder<DeliveryDbContext>()
-            .UseNpgsql(CreateDataSource(connectionString), o =>
-            {
-                o.MapEnum<UserRole>("user_role");
-                o.MapEnum<CourierStatus>("courier_state");
-                o.MapEnum<OrderStatus>("order_status");
-                o.MapEnum<OrderEventType>("event_type");
-                o.MapEnum<EventChannel>("event_channel");
-            })
-            .UseSnakeCaseNamingConvention()
-            .Options;
-
-    public static DbContextOptionsBuilder<DeliveryDbContext> Configure(
-    DbContextOptionsBuilder<DeliveryDbContext> ob, NpgsqlDataSource ds) =>
-    ob.UseNpgsql(ds, o =>
+    public static DbContextOptions<DeliveryDbContext> CreateOptions(string connectionString)
     {
-        o.MapEnum<UserRole>("user_role");
-        o.MapEnum<CourierStatus>("courier_state");
-        o.MapEnum<OrderStatus>("order_status");
-        o.MapEnum<OrderEventType>("event_type");
-        o.MapEnum<EventChannel>("event_channel");
-    }).UseSnakeCaseNamingConvention();
+        var ob = new DbContextOptionsBuilder<DeliveryDbContext>();
+        Configure(ob, CreateDataSource(connectionString));
+        return ob.Options;
+    }
+
+    public static DbContextOptionsBuilder Configure(DbContextOptionsBuilder ob, NpgsqlDataSource ds) =>
+        ob.UseNpgsql(ds, o =>
+        {
+            o.MapEnum<UserRole>("user_role");
+            o.MapEnum<CourierStatus>("courier_state");
+            o.MapEnum<OrderStatus>("order_status");
+            o.MapEnum<OrderEventType>("event_type");
+            o.MapEnum<EventChannel>("event_channel");
+        }).UseSnakeCaseNamingConvention();
     protected override void OnModelCreating(ModelBuilder b)
     {
         b.HasPostgresExtension("pgcrypto");
