@@ -11,10 +11,9 @@ namespace DeliveryService.Domain.Models
         {
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Название обязательно", nameof(name));
             Name = name;
-            Name = name;
             Quantity = Positive(quantity, nameof(quantity));
             UnitWeightKg = Positive(unitWeightKg, nameof(unitWeightKg));
-            UnitLengthCm = Positive(unitHeightCm, nameof(unitHeightCm));
+            UnitLengthCm = Positive(unitLengthCm, nameof(unitLengthCm));
             UnitWidthCm = Positive(unitWidthCm, nameof(unitWidthCm));
             UnitHeightCm = Positive(unitHeightCm, nameof(unitHeightCm));
         }

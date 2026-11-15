@@ -10,13 +10,14 @@ namespace DeliveryService.Domain.Models
     public class Order
     {
         private Order() { } 
-        public Order(long customerId, string externalNumber, string pickupAddress, string deliveryAddress, string recipientsFirstName, string recipientsLastName, string recipientsMiddleName, string recipientsPhoneNumber, IReadOnlyList<OrderItem> orderItems)
+        public Order(long customerId, string externalNumber, string publicCode, string pickupAddress, string deliveryAddress, string recipientsFirstName, string recipientsLastName, string? recipientsMiddleName, string recipientsPhoneNumber, IReadOnlyList<OrderItem> orderItems)
         {
             if (orderItems is null || orderItems.Count == 0)
                 throw new ArgumentException("Заказ должен содержать хотя бы одну позицию", nameof(orderItems));
 
             CustomerId = customerId;
             ExternalNumber = externalNumber;
+            PublicCode = publicCode;
             PickupAddress = pickupAddress;
             DeliveryAddress = deliveryAddress;
             Status = OrderStatus.Created;

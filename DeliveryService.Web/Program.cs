@@ -1,6 +1,7 @@
 using DeliveryService.Infrastructure;
 using DeliveryService.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Globalization;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,12 @@ builder.Services
         o.SlidingExpiration = true;
     });
 builder.Services.AddAuthorization();
+
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<OrderService>();
 
 var app = builder.Build();
 

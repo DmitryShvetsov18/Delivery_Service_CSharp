@@ -1,0 +1,88 @@
+﻿@model CreateOrderViewModel
+@{
+    ViewData["Title"] = "Новый заказ";
+}
+
+<h2>Новый заказ</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" style="color:red"></div>
+
+    <h3>Заказ</h3>
+    <div>
+        <label asp-for="ExternalNumber">Внешний номер (из вашей системы)</label><br />
+        <input asp-for="ExternalNumber" />
+        <span asp-validation-for="ExternalNumber" style="color:red"></span>
+    </div>
+    <div>
+        <label asp-for="DeliveryAddress">Адрес доставки</label><br />
+        <input asp-for="DeliveryAddress" size="60" />
+        <span asp-validation-for="DeliveryAddress" style="color:red"></span>
+    </div>
+
+    <h3>Получатель</h3>
+    <div>
+        <label asp-for="RecipientLastName">Фамилия</label><br />
+        <input asp-for="RecipientLastName" />
+        <span asp-validation-for="RecipientLastName" style="color:red"></span>
+    </div>
+    <div>
+        <label asp-for="RecipientFirstName">Имя</label><br />
+        <input asp-for="RecipientFirstName" />
+        <span asp-validation-for="RecipientFirstName" style="color:red"></span>
+    </div>
+    <div>
+        <label asp-for="RecipientMiddleName">Отчество</label><br />
+        <input asp-for="RecipientMiddleName" />
+    </div>
+    <div>
+        <label asp-for="RecipientPhone">Телефон</label><br />
+        <input asp-for="RecipientPhone" type="tel" oninput="this.value = this.value.replace(/[^0-9+\-()\s]/g, '')" />
+        <span asp-validation-for="RecipientPhone" style="color:red"></span>
+    </div>
+
+    <h3>Позиции (пустые строки игнорируются)</h3>
+    <table cellpadding="4">
+        <tr>
+            <th>Название</th>
+            <th>Кол-во</th>
+            <th>Вес ед., кг</th>
+            <th>Длина, см</th>
+            <th>Ширина, см</th>
+            <th>Высота, см</th>
+        </tr>
+        @for (int i = 0; i < Model.Items.Count; i++)
+        {
+            <tr>
+                <td>
+                    <input asp-for="Items[i].Name" />
+                    <span asp-validation-for="Items[i].Name" style="color:red"></span>
+                </td>
+                <td>
+                    <input asp-for="Items[i].Quantity" type="number" min="1" style="width:70px" />
+                    <span asp-validation-for="Items[i].Quantity" style="color:red"></span>
+                </td>
+                <td>
+                    <input asp-for="Items[i].WeightKg" type="number" step="any" style="width:90px" />
+                    <span asp-validation-for="Items[i].WeightKg" style="color:red"></span>
+                </td>
+                <td>
+                    <input asp-for="Items[i].LengthCm" type="number" step="any" style="width:90px" />
+                    <span asp-validation-for="Items[i].LengthCm" style="color:red"></span>
+                </td>
+                <td>
+                    <input asp-for="Items[i].WidthCm" type="number" step="any" style="width:90px" />
+                    <span asp-validation-for="Items[i].WidthCm" style="color:red"></span>
+                </td>
+                <td>
+                    <input asp-for="Items[i].HeightCm" type="number" step="any" style="width:90px" />
+                    <span asp-validation-for="Items[i].HeightCm" style="color:red"></span>
+                </td>
+            </tr>
+        }
+    </table>
+
+    <br />
+    <button type="submit">Создать заказ</button>
+    <a asp-action="Index">Отмена</a>
+</form>

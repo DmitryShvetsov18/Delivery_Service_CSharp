@@ -17,10 +17,10 @@ namespace DeliveryService.Domain.Services
             return item.UnitHeightCm * item.UnitLengthCm * item.UnitWidthCm / CubicCmInCubicM;
         }
 
-        public static decimal CalculateOrderTotalVolume(IEnumerable<OrderItem> orders)
+        public static decimal CalculateOrderTotalVolume(IEnumerable<OrderItem> orderItems)
         {   
             decimal sum = 0;
-            foreach (OrderItem item in orders)
+            foreach (OrderItem item in orderItems)
             {
                 sum = sum + CalculateOrderItemTotalVolume(item);
             }
