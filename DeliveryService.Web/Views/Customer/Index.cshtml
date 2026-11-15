@@ -10,6 +10,17 @@
     <p style="color:green">@msg</p>
 }
 
+<h3>API-доступ</h3>
+<form asp-action="IssueKey" method="post"
+      onsubmit="return @(ViewBag.KeyIssued == true ? "confirm('Старый ключ перестанет работать. Перевыпустить?')" : "true");">
+    <button type="submit">@(ViewBag.KeyIssued == true ? "Перевыпустить ключ" : "Выпустить ключ")</button>
+    @if (ViewBag.KeyIssued == true)
+    {
+        <span>Ключ выпущен</span>
+    }
+</form>
+<hr />
+
 <p><a asp-action="Create">Создать заказ</a></p>
 
 @if (Model.Count == 0)

@@ -14,11 +14,13 @@ public class CustomerController : Controller
 {
     private readonly DeliveryDbContext _db;
     private readonly OrderService _orders;
+    private readonly ApiKeyService _keys;
 
-    public CustomerController(DeliveryDbContext db, OrderService orders)
+    public CustomerController(DeliveryDbContext db, OrderService orders, ApiKeyService keys)
     {
         _db = db;
         _orders = orders;
+        _keys = keys;
     }
 
     private long CurrentUserId => long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -30,6 +32,10 @@ public class CustomerController : Controller
             .Where(o => o.CustomerId == CurrentUserId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
+        ViewBag.KeyIssued = await _db.Customers
+            .Where(c => c.Id == CurrentUserId)
+            .Select(c => c.ApiKeyHash != null)
+            .FirstAsync();
         return View(orders);
     }
 
@@ -67,6 +73,14 @@ public class CustomerController : Controller
             ? $"Заказ с номером {data.ExternalNumber} уже существует, дубль не создан (код {result.Order.PublicCode})"
             : $"Заказ создан, публичный код {result.Order.PublicCode}";
         return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> IssueKey()
+    {
+        var key = await _keys.IssueAsync(CurrentUserId);
+        return View("Key", key); 
     }
 
     private void ValidateItems(CreateOrderViewModel m)
