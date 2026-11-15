@@ -1,4 +1,5 @@
-﻿using DeliveryService.Domain.Models.Statuses;
+﻿using DeliveryService.Domain.Models.Roles;
+using DeliveryService.Domain.Models.Statuses;
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
@@ -53,5 +54,32 @@ namespace DeliveryService.Domain.Models
             (AssignedAt ?? CompletedAt ?? DateTime.UtcNow) - CreatedAt;
         public TimeSpan? DeliveryTime =>
     AssignedAt is null ? null : (CompletedAt ?? DateTime.UtcNow) - AssignedAt.Value;
+
+        public void AssignTo(Courier courier)
+        {
+            if (Status != OrderStatus.Created)
+                throw new InvalidOperationException("Назначить можно только заказ в статусе «Оформлен»");
+            CourierId = courier.Id;
+            Status = OrderStatus.InDelivery;
+            AssignedAt = DateTime.UtcNow;
+        }
+
+        public void Complete()
+        {
+            if (Status != OrderStatus.InDelivery)
+                throw new InvalidOperationException("Завершить можно только заказ «В доставке»");
+            Status = OrderStatus.Delivered;
+            CompletedAt = DateTime.UtcNow;
+        }
+
+
+        public void Cancel()
+        {
+            if (Status is OrderStatus.Delivered or OrderStatus.Cancelled)
+                throw new InvalidOperationException("Заказ уже в конечном статусе");
+            Status = OrderStatus.Cancelled;
+            CompletedAt = DateTime.UtcNow;
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DeliveryService.Domain.Models;
 using DeliveryService.Domain.Models.Statuses;
+using DeliveryService.Domain.Services;
 using DeliveryService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +9,13 @@ namespace DeliveryService.Services;
 public class OrderService
 {
     private readonly DeliveryDbContext _db;
-    public OrderService(DeliveryDbContext db) => _db = db;
+    private readonly AssignmentService _assignment;
+
+    public OrderService(DeliveryDbContext db, AssignmentService assignment)
+    {
+        _db = db;
+        _assignment = assignment;
+    }
 
     public async Task<CreateOrderResult> CreateAsync(long customerId, CreateOrderData data, EventChannel channel)
     {
@@ -26,29 +33,38 @@ public class OrderService
             customer.PickupAddress, data.DeliveryAddress, data.RecipientFirstName,
             data.RecipientLastName, data.RecipientMiddleName, data.RecipientPhone, items);
 
-        // TODO: проверка возможности доставки (ни один курьер не подходит => отказ)
+        var fleet = await _db.Couriers.AsNoTracking().Where(c => c.IsActive).ToListAsync();
+        if (!fleet.Any(c => CapacityChecker.Fits(order, c)))
+            throw new DeliveryNotPossibleException();
 
-        await using var tx = await _db.Database.BeginTransactionAsync();
-        try
+        await using (var tx = await _db.Database.BeginTransactionAsync())
         {
-            _db.Orders.Add(order);
-            await _db.SaveChangesAsync();   
+            try
+            {
+                _db.Orders.Add(order);
+                await _db.SaveChangesAsync();
 
-            _db.OrderEvents.Add(new OrderEvent(order.Id, OrderEventType.Created,
-                null, OrderStatus.Created, customer, null, channel));
-            await _db.SaveChangesAsync();
+                _db.OrderEvents.Add(new OrderEvent(order.Id, OrderEventType.Created,
+                    null, OrderStatus.Created, customer, null, channel));
+                await _db.SaveChangesAsync();
 
-            await tx.CommitAsync();
-            return new(CreateOrderStatus.Created, order);
+                await tx.CommitAsync();
+            }
+            catch (DbUpdateException)
+            {
+                _db.ChangeTracker.Clear();
+                var dup = await FindAsync(customerId, data.ExternalNumber);
+                if (dup is not null) return new(CreateOrderStatus.Duplicate, dup);
+                throw;
+            }
         }
-        catch (DbUpdateException)
-        {
-            _db.ChangeTracker.Clear();
-            var dup = await FindAsync(customerId, data.ExternalNumber);
-            if (dup is not null) return new(CreateOrderStatus.Duplicate, dup);
-            throw;
-        }
+
+        await _assignment.RunAsync();   
+
+        var fresh = await FindAsync(customerId, data.ExternalNumber);
+        return new(CreateOrderStatus.Created, fresh ?? order);
     }
+
 
     private Task<Order?> FindAsync(long customerId, string externalNumber) =>
         _db.Orders.AsNoTracking()

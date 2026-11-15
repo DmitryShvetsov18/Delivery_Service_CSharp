@@ -26,13 +26,13 @@ namespace DeliveryService.Domain.Models
         public long Id { get; private set; }
         public long OrderId { get; private set; }
         public long? UserInitiatorId { get; private set; }
-        public OrderEventType Type { get; set; }
+        public OrderEventType Type { get; private set; }
 
-        public OrderStatus? OrderStatusBeforeEvent { get; set; }
-        public OrderStatus? OrderStatusAfterEvent { get; set; }
-        public DateTime EventDateTime { get; set; }
-        public SystemUser? UserInitiator { get; set; }
-        public string? Comment { get; set; }
-        public EventChannel Channel { get; set; }
+        public OrderStatus? OrderStatusBeforeEvent { get; private set; }
+        public OrderStatus? OrderStatusAfterEvent { get; private set; }
+        public DateTime EventDateTime { get; private set; }
+        public SystemUser? UserInitiator { get; private set; }
+        public string? Comment { get; private set; }
+        public EventChannel Channel { get; private set; }
     }
 }

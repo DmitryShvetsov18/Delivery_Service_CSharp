@@ -31,6 +31,7 @@ CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<AssignmentService>();
 
 var app = builder.Build();
 

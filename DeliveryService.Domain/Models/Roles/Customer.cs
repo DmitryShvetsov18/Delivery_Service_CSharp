@@ -21,5 +21,6 @@ namespace DeliveryService.Domain.Models.Roles
         public string? ApiKeyHash { get; private set; }
         public bool IsKeyIssued => ApiKeyHash != null;
 
+        public void SetApiKeyHash(string hash) => ApiKeyHash = hash;
     }
 }

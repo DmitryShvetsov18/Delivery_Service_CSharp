@@ -5,7 +5,7 @@ using NUnit.Framework;
 using DeliveryService.Domain.Models;
 using DeliveryService.Domain.Services;
 
-namespace DeliveryService.Domain.Tests.Services
+namespace DeliveryService.Tests.Services
 {
     [TestFixture]
     public class OrderCalculatorTests

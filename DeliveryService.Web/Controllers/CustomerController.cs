@@ -52,7 +52,16 @@ public class CustomerController : Controller
             string.IsNullOrWhiteSpace(m.RecipientMiddleName) ? null : m.RecipientMiddleName.Trim(),
             m.RecipientPhone.Trim(), items);
 
-        var result = await _orders.CreateAsync(CurrentUserId, data, EventChannel.Web);
+        CreateOrderResult result;
+        try
+        {
+            result = await _orders.CreateAsync(CurrentUserId, data, EventChannel.Web);
+        }
+        catch (DeliveryNotPossibleException)
+        {
+            ModelState.AddModelError("", "Ни один курьер не может перевезти такой заказ (вес, объём или габариты)");
+            return View(m);
+        }
 
         TempData["Message"] = result.Status == CreateOrderStatus.Duplicate
             ? $"Заказ с номером {data.ExternalNumber} уже существует, дубль не создан (код {result.Order.PublicCode})"

@@ -8,6 +8,14 @@ namespace DeliveryService.Domain.Services
 {
     public static class CapacityChecker
     {
+        public const decimal FillFactor = 0.9m;
+
+        public static bool Fits(Order order, Courier courier)
+        {
+            if (order.OrderTotalVolume > courier.BodyVolume * FillFactor) return false;
+            if (order.OrderTotalWeight > courier.CarryingCapacityKg) return false;
+            return order.OrderItems.All(i => ItemFitsBody(i, courier));
+        }
         public static bool ItemFitsBody(OrderItem item, Courier courier)
         {
             decimal[] ItemSizes = { item.UnitLengthCm, item.UnitWidthCm, item.UnitHeightCm };

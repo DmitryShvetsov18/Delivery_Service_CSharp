@@ -2,5 +2,6 @@
   <Project Path="DeliveryService.Domain/DeliveryService.Domain.csproj" Id="a036e053-0b14-46df-9a86-18d4d6954590" />
   <Project Path="DeliveryService.Infrastructure/DeliveryService.Infrastructure.csproj" Id="624d9b5f-e2af-4d81-91b5-f32697f7a60e" />
   <Project Path="DeliveryService.Services/DeliveryService.Services.csproj" Id="338a9b6a-f67b-4825-9e04-f9720f3d6241" />
+  <Project Path="DeliveryService.Tests/DeliveryService.Tests.csproj" />
   <Project Path="DeliveryService.Web/DeliveryService.Web.csproj" Id="5b6fa726-515e-472b-a4fd-6a84ab726888" />
 </Solution>
