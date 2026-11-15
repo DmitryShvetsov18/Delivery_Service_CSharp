@@ -236,8 +236,8 @@ namespace DeliveryService.Infrastructure.Migrations
                         .HasColumnName("unit_length_cm");
 
                     b.Property<decimal>("UnitWeightKg")
-                        .HasPrecision(8, 2)
-                        .HasColumnType("numeric(8,2)")
+                        .HasPrecision(8, 3)
+                        .HasColumnType("numeric(8,3)")
                         .HasColumnName("unit_weight_kg");
 
                     b.Property<decimal>("UnitWidthCm")
@@ -316,7 +316,7 @@ namespace DeliveryService.Infrastructure.Migrations
 
                             t.HasCheckConstraint("ck_users_customer", "role <> 'customer' OR (name IS NOT NULL AND contact_phone IS NOT NULL AND pickup_address IS NOT NULL)");
 
-                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today > 0");
+                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today >= 0");
 
                             t.HasCheckConstraint("ck_users_staff", "role NOT IN ('support', 'admin') OR (first_name IS NOT NULL AND last_name IS NOT NULL)");
                         });
@@ -346,8 +346,8 @@ namespace DeliveryService.Infrastructure.Migrations
                         .HasColumnName("body_width_cm");
 
                     b.Property<decimal>("CarryingCapacityKg")
-                        .HasPrecision(8, 2)
-                        .HasColumnType("numeric(8,2)")
+                        .HasPrecision(8, 3)
+                        .HasColumnType("numeric(8,3)")
                         .HasColumnName("carrying_capacity_kg");
 
                     b.Property<string>("ContactPhone")
@@ -395,7 +395,7 @@ namespace DeliveryService.Infrastructure.Migrations
 
                             t.HasCheckConstraint("ck_users_customer", "role <> 'customer' OR (name IS NOT NULL AND contact_phone IS NOT NULL AND pickup_address IS NOT NULL)");
 
-                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today > 0");
+                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today >= 0");
 
                             t.HasCheckConstraint("ck_users_staff", "role NOT IN ('support', 'admin') OR (first_name IS NOT NULL AND last_name IS NOT NULL)");
                         });
@@ -446,7 +446,7 @@ namespace DeliveryService.Infrastructure.Migrations
 
                             t.HasCheckConstraint("ck_users_customer", "role <> 'customer' OR (name IS NOT NULL AND contact_phone IS NOT NULL AND pickup_address IS NOT NULL)");
 
-                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today > 0");
+                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today >= 0");
 
                             t.HasCheckConstraint("ck_users_staff", "role NOT IN ('support', 'admin') OR (first_name IS NOT NULL AND last_name IS NOT NULL)");
                         });
@@ -489,7 +489,7 @@ namespace DeliveryService.Infrastructure.Migrations
 
                             t.HasCheckConstraint("ck_users_customer", "role <> 'customer' OR (name IS NOT NULL AND contact_phone IS NOT NULL AND pickup_address IS NOT NULL)");
 
-                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today > 0");
+                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today >= 0");
 
                             t.HasCheckConstraint("ck_users_staff", "role NOT IN ('support', 'admin') OR (first_name IS NOT NULL AND last_name IS NOT NULL)");
                         });
@@ -515,7 +515,7 @@ namespace DeliveryService.Infrastructure.Migrations
 
                             t.HasCheckConstraint("ck_users_customer", "role <> 'customer' OR (name IS NOT NULL AND contact_phone IS NOT NULL AND pickup_address IS NOT NULL)");
 
-                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today > 0");
+                            t.HasCheckConstraint("ck_users_deliveries", "deliveries_today >= 0");
 
                             t.HasCheckConstraint("ck_users_staff", "role NOT IN ('support', 'admin') OR (first_name IS NOT NULL AND last_name IS NOT NULL)");
                         });

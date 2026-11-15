@@ -42,6 +42,16 @@ public class DeliveryDbContext : DbContext
             .UseSnakeCaseNamingConvention()
             .Options;
 
+    public static DbContextOptionsBuilder<DeliveryDbContext> Configure(
+    DbContextOptionsBuilder<DeliveryDbContext> ob, NpgsqlDataSource ds) =>
+    ob.UseNpgsql(ds, o =>
+    {
+        o.MapEnum<UserRole>("user_role");
+        o.MapEnum<CourierStatus>("courier_state");
+        o.MapEnum<OrderStatus>("order_status");
+        o.MapEnum<OrderEventType>("event_type");
+        o.MapEnum<EventChannel>("event_channel");
+    }).UseSnakeCaseNamingConvention();
     protected override void OnModelCreating(ModelBuilder b)
     {
         b.HasPostgresExtension("pgcrypto");
@@ -64,7 +74,7 @@ public class DeliveryDbContext : DbContext
                 t.HasCheckConstraint("ck_users_body_width", "body_width_cm > 0");
                 t.HasCheckConstraint("ck_users_body_height", "body_height_cm > 0");
                 t.HasCheckConstraint("ck_users_capacity", "carrying_capacity_kg > 0");
-                t.HasCheckConstraint("ck_users_deliveries", "deliveries_today > 0");
+                t.HasCheckConstraint("ck_users_deliveries", "deliveries_today >= 0");
             });
 
             e.Property(u => u.Login).HasMaxLength(64);
@@ -94,7 +104,7 @@ public class DeliveryDbContext : DbContext
             e.Property(x => x.BodyLengthCm).HasPrecision(6, 2);
             e.Property(x => x.BodyWidthCm).HasPrecision(6, 2);
             e.Property(x => x.BodyHeightCm).HasPrecision(6, 2);
-            e.Property(x => x.CarryingCapacityKg).HasPrecision(8, 2);
+            e.Property(x => x.CarryingCapacityKg).HasPrecision(8, 3);
         });
 
         b.Entity<SupportEmployee>(e =>
@@ -154,7 +164,7 @@ public class DeliveryDbContext : DbContext
                 t.HasCheckConstraint("ck_order_items_height", "unit_height_cm > 0");
             });
             e.Property(x => x.Name).HasMaxLength(200);
-            e.Property(x => x.UnitWeightKg).HasPrecision(8, 2);
+            e.Property(x => x.UnitWeightKg).HasPrecision(8, 3);
             e.Property(x => x.UnitLengthCm).HasPrecision(6, 2);
             e.Property(x => x.UnitWidthCm).HasPrecision(6, 2);
             e.Property(x => x.UnitHeightCm).HasPrecision(6, 2);
