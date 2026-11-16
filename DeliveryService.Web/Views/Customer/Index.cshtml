@@ -39,6 +39,7 @@ else
             <th>Вес, кг</th>
             <th>Объём, м³</th>
             <th>Создан</th>
+            <th>Отменить</th>
         </tr>
         @foreach (var o in Model)
         {
@@ -60,6 +61,15 @@ else
                 <td>@o.OrderTotalWeight.ToString("0.##")</td>
                 <td>@o.OrderTotalVolume.ToString("0.####")</td>
                 <td>@o.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                <td>
+                    @if (o.Status == DeliveryService.Domain.Models.Statuses.OrderStatus.Created)
+                    {
+                        <form asp-action="Cancel" asp-route-id="@o.Id" method="post"
+                              onsubmit="return confirm('Отменить заказ @o.ExternalNumber?');">
+                            <button type="submit">Отменить</button>
+                        </form>
+                    }
+                </td>
             </tr>
         }
     </table>

@@ -17,6 +17,10 @@ namespace DeliveryService.Services
                 db.Users.Add(new Customer("shop", H("shop123"),
                     "Тестовый магазин", "г. Владимир, ул. Складская, 1", "+70000000001"));
 
+            if (!await db.Users.AnyAsync(u => u.Login == "shop2"))
+                db.Users.Add(new Customer("shop2", H("shop123"),
+                    "Второй магазин", "г. Владимир, ул. Мира, 2", "+70000000004"));
+
             // большой фургон (м) и малое ТС
             if (!await db.Users.AnyAsync(u => u.Login == "courier1"))
                 db.Users.Add(new Courier("courier1", H("courier123"),

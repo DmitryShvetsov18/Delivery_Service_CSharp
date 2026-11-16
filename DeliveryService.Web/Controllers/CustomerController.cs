@@ -83,6 +83,19 @@ public class CustomerController : Controller
         return View("Key", key); 
     }
 
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Cancel(long id)
+    {
+        var result = await _orders.CancelAsync(CurrentUserId, id, EventChannel.Web);
+        TempData["Message"] = result switch
+        {
+            CancelResult.Cancelled => "Заказ отменён",
+            CancelResult.NotAllowed => "Отменить можно только заказ в статусе «Оформлен». Заказ уже у курьера или завершён, обратитесь в поддержку",
+            _ => "Заказ не найден"
+        };
+        return RedirectToAction(nameof(Index));
+    }
+
     private void ValidateItems(CreateOrderViewModel m)
     {
         if (m.Items.All(i => i.IsEmpty))

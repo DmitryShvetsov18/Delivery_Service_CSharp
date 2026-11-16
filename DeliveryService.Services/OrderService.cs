@@ -65,6 +65,28 @@ public class OrderService
         return new(CreateOrderStatus.Created, fresh ?? order);
     }
 
+    public async Task<CancelResult> CancelAsync(long customerId, long orderId, EventChannel channel)
+    {
+        await using var tx = await _db.Database.BeginTransactionAsync();
+
+        await _db.Database.ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock({AssignmentService.LockKey})");
+        _db.ChangeTracker.Clear();
+
+        var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == orderId && o.CustomerId == customerId);
+        if (order is null) return CancelResult.NotFound;
+        if (order.Status != OrderStatus.Created) return CancelResult.NotAllowed;
+
+        var customer = await _db.Customers.FirstAsync(c => c.Id == customerId);
+        var before = order.Status;
+        order.Cancel();
+        _db.OrderEvents.Add(new OrderEvent(order.Id, OrderEventType.Cancelled,
+            before, order.Status, customer, null, channel));
+
+        await _db.SaveChangesAsync();
+        await tx.CommitAsync();
+        return CancelResult.Cancelled;
+    }
+
 
     private Task<Order?> FindAsync(long customerId, string externalNumber) =>
         _db.Orders.AsNoTracking()

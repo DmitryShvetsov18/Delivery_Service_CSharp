@@ -11,4 +11,6 @@ public record CreateOrderData(string ExternalNumber, string DeliveryAddress,
 
 public enum CreateOrderStatus { Created, Duplicate }
 
+public enum CancelResult { Cancelled, NotFound, NotAllowed }
+
 public record CreateOrderResult(CreateOrderStatus Status, Order Order);
