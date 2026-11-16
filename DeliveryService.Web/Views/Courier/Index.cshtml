@@ -1,6 +1,47 @@
-﻿@{
+﻿@model DeliveryService.Domain.Models.Roles.Courier
+@using DeliveryService.Domain.Models.Statuses
+@{
     ViewData["Title"] = "Кабинет курьера";
 }
 
 <h2>Кабинет курьера</h2>
-<p>Вы вошли как @User.Identity!.Name</p>
+<p>@Model.LastName @Model.FirstName (@User.Identity!.Name)</p>
+
+@if (TempData["Error"] is string err)
+{
+    <p style="color:red">@err</p>
+}
+
+<p>
+    Состояние: <strong>
+    @(Model.Status switch
+    {
+        CourierStatus.OffShift => "Не на смене",
+        CourierStatus.Free => "Свободен",
+        CourierStatus.Busy => "Занят",
+        _ => Model.Status.ToString()
+    })
+</strong>
+</p>
+<p>Доставок сегодня: @Model.DeliveriesToday</p>
+<p>ТС: @Model.BodyLengthCm × @Model.BodyWidthCm × @Model.BodyHeightCm см, грузоподъёмность @Model.CarryingCapacityKg кг</p>
+
+@if (Model.Status == CourierStatus.OffShift)
+{
+    <form asp-action="StartShift" method="post"><button type="submit">Начать смену</button></form>
+}
+else
+{
+    <form asp-action="EndShift" method="post" style="display:inline">
+        <button type="submit">Завершить смену</button>
+    </form>
+}
+
+@if (Model.Status == CourierStatus.Busy)
+{
+    <p><a asp-action="Current">Текущий заказ</a></p>
+}
+else if (Model.Status == CourierStatus.Free)
+{
+    <p>Ожидайте назначения заказа. Обновите страницу, чтобы проверить.</p>
+}

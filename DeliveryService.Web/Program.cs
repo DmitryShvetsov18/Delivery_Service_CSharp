@@ -33,6 +33,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<AssignmentService>();
 builder.Services.AddScoped<ApiKeyService>();
+builder.Services.AddScoped<CourierService>();
 
 var app = builder.Build();
 

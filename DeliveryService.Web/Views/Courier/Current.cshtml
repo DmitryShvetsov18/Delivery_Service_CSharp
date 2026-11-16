@@ -1,0 +1,39 @@
+﻿@model DeliveryService.Domain.Models.Order?
+@{
+    ViewData["Title"] = "Текущий заказ";
+}
+
+<h2>Текущий заказ</h2>
+
+@if (Model is null)
+{
+    <p>У вас нет заказа в доставке.</p>
+}
+else
+{
+    <p>Номер заказа: @Model.ExternalNumber</p>
+    <p>Назначен: @Model.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+    <p>Забрать по адресу: @Model.PickupAddress</p>
+    <p>Доставить по адресу: <strong>@Model.DeliveryAddress</strong></p>
+    <p>Получатель: @Model.RecipientsLastName @Model.RecipientsFirstName @Model.RecipientsMiddleName,
+       тел. @Model.RecipientsPhoneNumber</p>
+
+    <table border="1" cellpadding="4">
+        <tr><th>Название</th><th>Кол-во</th><th>Вес ед., кг</th><th>Размеры, см</th></tr>
+        @foreach (var i in Model.OrderItems)
+        {
+            <tr>
+                <td>@i.Name</td>
+                <td>@i.Quantity</td>
+                <td>@i.UnitWeightKg.ToString("0.##")</td>
+                <td>@i.UnitLengthCm.ToString("0.##") × @i.UnitWidthCm.ToString("0.##") × @i.UnitHeightCm.ToString("0.##")</td>
+            </tr>
+        }
+    </table>
+    <p>Итого: @Model.OrderTotalWeight.ToString("0.##") кг, @Model.OrderTotalVolume.ToString("0.####") м³</p>
+
+    <form asp-action="FinishDelivery" method="post">
+        <button type="submit">Завершить доставку</button>
+    </form>
+}
+<p><a asp-action="Index">В кабинет</a></p>
