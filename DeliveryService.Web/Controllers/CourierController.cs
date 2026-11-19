@@ -50,6 +50,10 @@ public class CourierController : Controller
     {
         try { await action(); }
         catch (InvalidOperationException ex) { TempData["Error"] = ex.Message; }
+        catch (DbUpdateConcurrencyException)
+        {
+            TempData["Error"] = "Заказ только что изменился. Проверьте текущее состояние и повторите действие";
+        }
         return RedirectToAction(redirectTo);
     }
 }

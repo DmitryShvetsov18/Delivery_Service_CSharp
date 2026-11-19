@@ -10,6 +10,18 @@
         <strong>Доставка заказов</strong>
         @if (User.Identity?.IsAuthenticated == true)
         {
+            if (User.IsInRole("Customer"))
+            {
+                <a asp-controller="Customer" asp-action="Index">Мои заказы</a>
+            }
+            if (User.IsInRole("Courier"))
+            {
+                <a asp-controller="Courier" asp-action="Index">Кабинет курьера</a>
+            }
+            if (User.IsInRole("Support") || User.IsInRole("Admin"))
+            {
+                <a asp-controller="Support" asp-action="Index">Поддержка</a>
+            }
             <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
                 <button type="submit">Выйти (@User.Identity.Name)</button>
             </form>

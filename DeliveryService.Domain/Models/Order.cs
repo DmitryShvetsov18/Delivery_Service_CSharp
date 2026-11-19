@@ -1,10 +1,6 @@
 ﻿using DeliveryService.Domain.Models.Roles;
 using DeliveryService.Domain.Models.Statuses;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using DeliveryService.Domain.Services;
 
 namespace DeliveryService.Domain.Models
 {
@@ -47,7 +43,8 @@ namespace DeliveryService.Domain.Models
         public DateTime CreatedAt { get; private set; }
         public DateTime? AssignedAt { get; private set; }
         public DateTime? CompletedAt { get; private set; }
-        
+        public uint Version { get; private set; }
+
         public decimal OrderTotalWeight => Services.OrderCalculator.CalculateOrderTotalWeight(this.OrderItems);
         public decimal OrderTotalVolume => Services.OrderCalculator.CalculateOrderTotalVolume(this.OrderItems);
         public TimeSpan WaitTime =>
@@ -57,7 +54,7 @@ namespace DeliveryService.Domain.Models
 
         public void AssignTo(Courier courier)
         {
-            if (Status != OrderStatus.Created)
+            if (!OrderStateRules.CanAssign(Status))
                 throw new InvalidOperationException("Назначить можно только заказ в статусе «Оформлен»");
             CourierId = courier.Id;
             Status = OrderStatus.InDelivery;
@@ -66,7 +63,7 @@ namespace DeliveryService.Domain.Models
 
         public void Complete()
         {
-            if (Status != OrderStatus.InDelivery)
+            if (!OrderStateRules.CanComplete(Status))
                 throw new InvalidOperationException("Завершить можно только заказ «В доставке»");
             Status = OrderStatus.Delivered;
             CompletedAt = DateTime.UtcNow;
@@ -75,7 +72,7 @@ namespace DeliveryService.Domain.Models
 
         public void Cancel()
         {
-            if (Status is OrderStatus.Delivered or OrderStatus.Cancelled)
+            if (!OrderStateRules.CanCancelBySupport(Status))
                 throw new InvalidOperationException("Заказ уже в конечном статусе");
             Status = OrderStatus.Cancelled;
             CompletedAt = DateTime.UtcNow;

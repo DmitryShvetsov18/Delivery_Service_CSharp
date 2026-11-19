@@ -30,6 +30,10 @@ namespace DeliveryService.Services
                 db.Users.Add(new Courier("courier2", H("courier123"),
                     "Пётр", "Малов", null, "+70000000003", 50, 40, 40, 15));
 
+            if (!await db.Users.AnyAsync(u => u.Login == "support"))
+                db.Users.Add(new SupportEmployee("support", H("support123"),
+                    "Анна", "Поддержкина", null));
+
             await db.SaveChangesAsync();
         }
     }

@@ -128,6 +128,7 @@ public class DeliveryDbContext : DbContext
             e.Property(o => o.RecipientsMiddleName).HasMaxLength(100);
             e.Property(o => o.RecipientsPhoneNumber).HasMaxLength(20);
             e.Property(o => o.CreatedAt).HasDefaultValueSql("now()");
+            e.Property(o => o.Version).IsRowVersion();
 
             e.HasOne<Customer>().WithMany().HasForeignKey(o => o.CustomerId).OnDelete(DeleteBehavior.Restrict);
             e.HasOne<Courier>().WithMany().HasForeignKey(o => o.CourierId).OnDelete(DeleteBehavior.Restrict);

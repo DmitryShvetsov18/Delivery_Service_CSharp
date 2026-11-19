@@ -109,6 +109,12 @@ namespace DeliveryService.Infrastructure.Migrations
                         .HasColumnType("order_status")
                         .HasColumnName("status");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id")
                         .HasName("pk_orders");
 

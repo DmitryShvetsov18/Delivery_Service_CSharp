@@ -27,11 +27,6 @@ namespace DeliveryService.Web.Controllers
                 ModelState.AddModelError("", "Неверный логин или пароль");
                 return View(m);
             }
-            if (user.Role is not (UserRole.Customer or UserRole.Courier))
-            {
-                ModelState.AddModelError("", "Для этой роли кабинета в MVP нет");
-                return View(m);
-            }
 
             var claims = new List<Claim>
         {
@@ -43,7 +38,12 @@ namespace DeliveryService.Web.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(identity));
 
-            return RedirectToAction("Index", user.Role == UserRole.Customer ? "Customer" : "Courier");
+            return user.Role switch
+            {
+                UserRole.Customer => RedirectToAction("Index", "Customer"),
+                UserRole.Courier => RedirectToAction("Index", "Courier"),
+                _ => RedirectToAction("Index", "Support")   // "Support" и "Admin"
+            }; ;
         }
 
         [HttpPost, ValidateAntiForgeryToken]

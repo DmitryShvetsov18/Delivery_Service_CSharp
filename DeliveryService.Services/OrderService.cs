@@ -74,7 +74,7 @@ public class OrderService
 
         var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == orderId && o.CustomerId == customerId);
         if (order is null) return CancelResult.NotFound;
-        if (order.Status != OrderStatus.Created) return CancelResult.NotAllowed;
+        if (!OrderStateRules.CanCancelByCustomer(order.Status)) return CancelResult.NotAllowed;
 
         var customer = await _db.Customers.FirstAsync(c => c.Id == customerId);
         var before = order.Status;

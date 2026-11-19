@@ -86,7 +86,17 @@ public class CustomerController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel(long id)
     {
-        var result = await _orders.CancelAsync(CurrentUserId, id, EventChannel.Web);
+        CancelResult result;
+        try
+        {
+            result = await _orders.CancelAsync(CurrentUserId, id, EventChannel.Web);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            TempData["Message"] = "Заказ только что изменился. Обновите список и повторите действие";
+            return RedirectToAction(nameof(Index));
+        }
+
         TempData["Message"] = result switch
         {
             CancelResult.Cancelled => "Заказ отменён",

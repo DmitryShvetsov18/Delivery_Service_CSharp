@@ -1,0 +1,8 @@
+﻿@{
+    ViewData["Title"] = "Кабинет поддержки";
+}
+
+<h2>Кабинет поддержки</h2>
+<p>
+    Вы вошли как <strong>@User.Identity!.Name</strong>
+    (@(User.IsInRole(DeliveryService.Web.AppRoles.Admin) ? "администратор" : "сотрудник поддержки")).</p>
